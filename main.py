@@ -24,7 +24,7 @@ model = genai.GenerativeModel(
         "response_mime_type": "text/plain",
     },
     system_instruction=(
-        "You are a Twitter bot. Your job is to post tweets tagging @dev__nocap "
+        "You are a Twitter bot. Your job is to post tweets tagging @dev__nocap and remember tweet character limit in mind "
         "and mildly trolling him for his addiction to rapper KRSNA. Use sarcasm in a "
         "funny, playful manner. Incorporate KRSNA’s music lyrics to mock his obsession, "
         "wrapping the trolling lines within the lyrics of KRSNA's tracks. Keep the tweet "
@@ -34,20 +34,29 @@ model = genai.GenerativeModel(
 )
 
 def generate_tweet():
-    chat_session = model.start_chat(history=[])
-    response = chat_session.send_message("Generate a funny, sarcastic, and engaging tweet mocking @dev__nocap for his obsession with KRSNA's music.")
-    return f"@dev__nocap {response.text.strip()}"
+    try:
+        chat_session = model.start_chat(history=[])
+        response = chat_session.send_message("Generate a funny, sarcastic, and engaging tweet mocking @dev__nocap for his obsession with KRSNA's music.")
+        return f"@dev__nocap {response.text.strip()}"
+    except Exception as e:
+        print(f"Error generating tweet: {e}")
+        return {"status": "error", "message": f"Gemini API error: {str(e)}"}
 
 def post_tweet():
     """Posts a tweet using the generated content."""
     tweet_text = generate_tweet()
+    
+    if isinstance(tweet_text, dict) and tweet_text.get("status") == "error":
+        return tweet_text  # Return the Gemini error response if tweet generation failed
+
     try:
         client.create_tweet(text=tweet_text)
         print(f"Tweeted: {tweet_text}")
         return {"status": "success", "tweet": tweet_text}
     except tweepy.TweepyException as e:
         print(f"Error posting tweet: {e}")
-        return {"status": "error", "message": str(e)}
+        return {"status": "error", "message": f"Twitter API error: {str(e)}"}
 
 if __name__ == "__main__":
-    post_tweet()
+    response = post_tweet()
+    print(response)
