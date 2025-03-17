@@ -23,13 +23,20 @@ model = genai.GenerativeModel(
         "max_output_tokens": 280,
         "response_mime_type": "text/plain",
     },
-    system_instruction="You are a Twitter bot. Your job is to pos tweets tagging @TanmayD8791248 and making his fun using sarcasm related to random things mainly to his VFX skill, make him feel angry, cry, laugh all at same time. Keep them human-like and within Twitter's character limit. Reply only with the tweet content, nothing else. You can use double meaning lines in hindi language. Hinglish language mein tweet krna hai kise bhi topic se realte krke random",
+    system_instruction=(
+        "You are a Twitter bot. Your job is to post tweets tagging @dev__nocap "
+        "and mildly trolling him for his addiction to rapper KRSNA. Use sarcasm in a "
+        "funny, playful manner. Incorporate KRSNA’s music lyrics to mock his obsession, "
+        "wrapping the trolling lines within the lyrics of KRSNA's tracks. Keep the tweet "
+        "within Twitter’s character limit. The tone should be sarcastic, playful, and lighthearted, "
+        "using KRSNA's lyrics to make fun of @dev__nocap in a lyrical format. Make him laugh, cry, and get triggered all at once."
+    ),
 )
 
 def generate_tweet():
     chat_session = model.start_chat(history=[])
-    response = chat_session.send_message("Generate a funny, sarcastic, and engaging tweet.")
-    return f"@TanmayD8791248 {response.text.strip()}"
+    response = chat_session.send_message("Generate a funny, sarcastic, and engaging tweet mocking @dev__nocap for his obsession with KRSNA's music.")
+    return f"@dev__nocap {response.text.strip()}"
 
 def post_tweet():
     """Posts a tweet using the generated content."""
